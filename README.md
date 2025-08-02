@@ -27,6 +27,13 @@ npm run dev
 npm run lint
 ```
 
+## Chatbot Usage
+
+1. Run `npm start` to launch the chatbot
+2. Type your message and press Enter
+3. The AI assistant will respond
+4. Type `exit` to quit the chatbot
+
 ## Requirements
 
 - Node.js >= 20.6.0
