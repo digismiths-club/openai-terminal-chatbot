@@ -1,28 +1,34 @@
-// Basic chatbot setup using OpenAI's API with no memory
-
 import OpenAI from "openai";
+import chalk from "chalk";
+import * as readline from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
 
 const openai = new OpenAI();
 
-const context = [];
-context.push({ role: "system", content: "You are a helpful assistant." });
+const rl = readline.createInterface({ input, output, prompt: chalk.blue("You: ") });
 
-console.log("Welcome to the chatbot! Type 'exit' to quit.");
+const context = [{ role: "system", content: "You are a helpful assistant." }];
 
-// Listen for user input from the terminal
-process.stdin.addListener("data", async (input) => {
-  console.log("You: %s", input.toString());
-  if (input.toString().trim() === "exit") {
-    process.exit();
+console.log(chalk.green("Welcome to the chatbot! Type 'exit' to quit."));
+rl.prompt();
+
+rl.on("line", async (userInput) => {
+  const userText = userInput.trim();
+  if (userText.toLowerCase() === "exit") {
+    rl.close();
+    process.exit(0);
   }
 
-  context.push({ role: "user", content: input.toString() });
+  context.push({ role: "user", content: userText });
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: context
+    model: "gpt-4o-mini", // or your preferred model
+    messages: context,
   });
 
-  context.push({ role: "assistant", content: response.choices[0].message.content });
-  console.log("Assistant: %s", response.choices[0].message.content);
+  const assistantMsg = response.choices[0].message.content;
+  context.push({ role: "assistant", content: assistantMsg });
+
+  console.log(chalk.yellowBright(`Assistant: ${assistantMsg}`));
+  rl.prompt();
 });
