@@ -1,11 +1,17 @@
 import OpenAI from "openai";
 import chalk from "chalk";
-import * as readline from "node:readline/promises";
-import { stdin as input, stdout as output } from "node:process";
+import readline from "node:readline/promises";
+// import { stdin as input, stdout as output } from "node:process";
 
 const openai = new OpenAI();
 
-const rl = readline.createInterface({ input, output, prompt: chalk.blue("You: ") });
+const input = process.stdin;
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  prompt: chalk.blue("You: "),
+});
 
 const context = [{ role: "system", content: "You are a helpful assistant." }];
 
@@ -29,6 +35,15 @@ rl.on("line", async (userInput) => {
   const assistantMsg = response.choices[0].message.content;
   context.push({ role: "assistant", content: assistantMsg });
 
-  console.log(chalk.yellowBright(`Assistant: ${assistantMsg}`));
+  console.log(chalk.yellowBright(`Assistant: `),assistantMsg);
+
+
+  if (context.length > 3) {
+    context.splice(1,2)
+  }
+  
   rl.prompt();
 });
+
+
+
